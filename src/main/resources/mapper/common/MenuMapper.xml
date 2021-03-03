@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.playd.vue.api.menu.MenuMapper">
+	<select id="selectMenuList" parameterType="String" resultType="com.playd.vue.api.menu.MenuModel">
+		SELECT * FROM sm_menu
+		WHERE 1=1
+			<if test="use_yn != ''">
+				AND use_yn=#{use_yn}
+			</if>
+		ORDER BY seq
+	</select>
+
+	<select id="selectMenuInfo" parameterType="int" resultType="com.playd.vue.api.menu.MenuModel">
+		SELECT 	menu_no,
+			menu_nm,
+			page_id,
+			p_menu_no,
+			(SELECT menu_nm FROM sm_menu b WHERE b.menu_no=a.p_menu_no) AS p_menu_nm,
+			target,
+			url,
+			IFNULL(memo,'') AS memo,
+			seq,
+			reg_user_no,
+			reg_date,
+			use_yn
+		FROM
+			sm_menu a
+		WHERE menu_no=${menu_no}
+	</select>
+
+	<select id="selectAllGroupInfo" resultType="com.playd.vue.api.menu.MenuModel">
+		SELECT group_no as id,
+			group_nm as name
+		FROM
+			sm_group
+		ORDER BY seq
+	</select>
+	<select id="selectMenuGroupInfo" parameterType="int" resultType="com.playd.vue.api.menu.MenuModel">
+		SELECT b.group_no as id,b.group_nm as name
+		FROM sm_group_menu a
+			INNER JOIN sm_group b ON a.group_no=b.group_no
+		WHERE a.menu_no=${menu_no}
+		ORDER BY b.seq
+	</select>
+
+	<select id="selectMenuParentInfo" parameterType="int" resultType="com.playd.vue.api.menu.MenuModel">
+		SELECT menu_nm,menu_no FROM sm_menu WHERE p_menu_no=0 ORDER BY seq
+	</select>
+
+	<update id="updateMenuSeqPlus" parameterType="int">
+		UPDATE sm_menu SET
+			seq = seq+1
+		WHERE seq>=${seq}
+	</update>
+
+	<select id="selectMenuSeqMax" parameterType="int" resultType="int">
+		SELECT MAX(seq)+1 as seq FROM sm_menu WHERE p_menu_no=#{p_menu_no}
+	</select>
+
+	<insert id="insertMenuInfo" parameterType="com.playd.vue.api.menu.MenuModel">
+		INSERT INTO sm_menu(menu_nm,page_id,p_menu_no,target,url,memo,seq,reg_user_no,reg_date,use_yn)
+		VALUES(#{menu_nm},#{page_id},#{p_menu_no},#{target},#{url},#{memo},#{seq},#{reg_user_no},NOW(),#{use_yn})
+		<selectKey keyProperty="menu_no" resultType="int" order="AFTER">
+			SELECT LAST_INSERT_ID() menu_no
+		</selectKey>
+	</insert>
+
+	<delete id="deleteMenuInfo" parameterType="com.playd.vue.api.menu.MenuModel">
+		DELETE FROM sm_menu WHERE menu_no=#{menu_no}
+	</delete>
+
+	<update id="updateMenuInfo" parameterType="com.playd.vue.api.menu.MenuModel">
+		UPDATE sm_menu SET
+		 menu_nm = #{menu_nm}
+		, page_id = #{page_id}
+		, p_menu_no = #{p_menu_no}
+		, target = #{target}
+		, url = #{url}
+		, memo = #{memo}
+		, seq = #{seq}
+		, reg_user_no = #{reg_user_no}
+		, reg_date = NOW()
+		, use_yn = #{use_yn}
+		WHERE menu_no=${menu_no}
+	</update>
+
+	<update id="updateMenuSeq">
+		UPDATE sm_menu a
+			INNER JOIN (
+				SELECT * FROM (
+				SELECT
+				@rownum:=@rownum+1 AS seq, b.menu_no
+				FROM sm_menu b, (SELECT @rownum:=0) TMP
+				ORDER BY b.seq) a
+			) b
+		SET
+			a.seq = b.seq
+		WHERE a.menu_no=b.menu_no
+	</update>
+
+	<delete id="deleteGroupMenu" parameterType="int">
+		DELETE FROM sm_group_menu WHERE menu_no=${menu_no}
+	</delete>
+
+	<insert id="insertGroupMenu" parameterType="com.playd.vue.api.menu.MenuModel">
+		INSERT INTO sm_group_menu(group_no,menu_no)
+		VALUES(${id},${menu_no})
+	</insert>
+
+	<select id="selectMenuUrlDuplChk" parameterType="com.playd.vue.api.menu.MenuModel" resultType="int">
+		SELECT COUNT(1) FROM sm_menu WHERE menu_no!=#{menu_no} AND url = #{url}
+	</select>
+
+	<select id="selectMenuPageIdDuplChk" parameterType="com.playd.vue.api.menu.MenuModel" resultType="int">
+		SELECT COUNT(1) FROM sm_menu WHERE menu_no!=#{menu_no} AND page_id = #{page_id}
+	</select>
+</mapper>

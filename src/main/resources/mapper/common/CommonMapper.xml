@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.playd.vue.common.CommonMapper">
+	<select id="selectCommCd" parameterType="map" resultType="map">
+		SELECT /* CommonMapper.selectCommCd */  
+			  comm_cd 
+			, cd 
+			, cd_val
+			, IFNULL(cd_desc,'') AS cd_desc 
+			, cd_ord
+			, DATE_FORMAT(reg_ymdt,'%Y-%m-%d') AS reg_ymdt 
+			, use_yn
+		FROM mas2.mas_comm_cd
+		WHERE comm_cd = #{comm_cd}
+			<if test='cd neq null and cd neq ""'>
+			AND cd = #{cd}
+			</if>
+			ANd use_yn='y'
+		ORDER BY cd_ord
+	</select>
+
+	
+	<insert id="insertWhatever" parameterType="map">
+		INSERT INTO /* CommonMapper.insertWhatever */ 
+			mas2.${any_table_nm}(
+		<foreach item="entry" index="key" collection="_parameter.entrySet()" separator=",">
+			<if test="key neq 'any_table_nm'">
+				${key}
+			</if>
+		</foreach>
+		) VALUES (
+		<foreach item="entry" index="key" collection="_parameter.entrySet()" separator=",">
+			<if test="key neq 'any_table_nm'">
+				#{entry}
+			</if>
+		</foreach>
+		)
+	</insert>
+	
+	
+	<select id="selectExistTable" parameterType="com.playd.vue.common.SearchModel" resultType="int">
+		SELECT COUNT(*) /* CommonMapper.selectExistTable */
+		 FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_SCHEMA = 'mas2' 
+		  AND TABLE_NAME = #{search_tb}
+		  <if test='search_nm neq null and search_nm neq ""'>
+		  	AND COLUMN_NAME = #{search_nm}
+		  </if>
+	</select>
+	
+	
+	<select id="selectTable" parameterType="com.playd.vue.common.SearchModel" resultType="HashMap">
+		SELECT * /* CommonMapper.selectUser */
+		  FROM mas2.${search_tb}
+		  
+		<if test='search_nm neq null and search_nm neq ""'>
+			<if test='search_val neq null and search_val neq ""'>
+				<if test="search_type eq 'equal'">
+				  WHERE ${search_nm} = #{search_val} 
+				</if>
+				<if test="search_type eq 'like'">
+				  WHERE ${search_nm} LIKE CONCAT('%',#{search_val},'%')
+				</if> 
+			</if>
+		</if>
+	</select>
+</mapper>

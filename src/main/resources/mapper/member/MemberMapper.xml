@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.playd.vue.member.MemberMapper">
+	<select id="selectLoginProcess" parameterType="com.playd.vue.member.MemberModel" resultType="com.playd.vue.member.MemberModel">
+		SELECT *
+		FROM sm_user
+		WHERE user_id=#{user_id}
+			AND user_pw = SHA2(#{user_pw},256)
+	</select>
+
+	<select id="selectAutoLoginProcess" parameterType="String" resultType="com.playd.vue.member.MemberModel">
+		SELECT *
+		FROM sm_user
+		WHERE user_no=#{user_no}
+	</select>
+
+	<update id="updateLoginFailCnt" parameterType="com.playd.vue.member.MemberModel">
+		UPDATE sm_user
+		SET login_fail_cnt = login_fail_cnt+1
+		WHERE user_id = #{user_id}
+		<selectKey keyProperty="login_fail_cnt" resultType="int" order="AFTER">
+			SELECT IFNULL(MAX(login_fail_cnt),-1) as login_fail_cnt FROM sm_user WHERE user_id = #{user_id}
+		</selectKey>
+	</update>
+
+	<update id="updateLoginFailCntReset" parameterType="com.playd.vue.member.MemberModel">
+		UPDATE sm_user
+		   SET login_fail_cnt = 0
+		 WHERE user_id = #{user_id}
+	</update>
+
+	<insert id="insertLoginHistory" parameterType="com.playd.vue.member.MemberModel">
+		INSERT INTO sm_login_history(user_id,ip,reason,login_fail_yn,reg_date)
+		VALUES(#{user_id},#{ip},#{reason},#{login_fail_yn},NOW())
+	</insert>
+
+	<!-- 로그인시간 업데이트 -->
+	<update id="updateLastLoginTime" parameterType="com.playd.vue.member.MemberModel">
+		UPDATE sm_user
+		   SET login_date = NOW()
+		 WHERE user_no = #{user_no}
+	</update>
+
+</mapper>

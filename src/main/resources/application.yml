@@ -1,0 +1,121 @@
+spring:
+  profiles:
+    active: local # basic setting
+  thymeleaf:
+    cache: false
+    suffix: .html
+
+server:
+  port: 8081
+  
+tomcat:
+  ajp:
+    protocol: AJP/1.3
+    port: 18009
+    remoteauthentication: false
+    enabled: true    
+
+mybatis:
+    type-aliases-package: com.playd.vue
+    mapper-locations:
+    - classpath:/mapper/**/*Mapper.xml
+
+---
+# local(127.0.0.1)
+
+spring:
+  profiles: local
+  datasource:
+#    url: jdbc:mysql://10.101.97.88:13306/mas2_dev?characterEncoding=UTF-8&serverTimezone=UTC
+#    url: jdbc:log4jdbc:mysql://10.101.97.74:13306/vue_test?characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:log4jdbc:mysql://10.101.97.88:13306/plum2_dev?characterEncoding=UTF-8&serverTimezone=UTC
+    username: admin
+    password: nsm!@#123
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    hikari:
+      connection-timeout: 5000
+      validation-timeout: 1000
+      maximum-pool-size: 30
+      minimum-idle: 2
+      connection-test-query: SELECT 1
+      
+logging:
+  path: D:/logs
+  
+access:
+  domains: null
+  
+
+
+  
+file:
+  path:
+    default: D:/home1/irteam/files_server/service/vue
+    upload: D:/home1/irteam/files_server/service/vue/upload
+    company: D:/home1/irteam/files_server/service/vue/company
+    board: D:/home1/irteam/files_server/service/vue/board
+    temp: D:/home1/irteam/files_server/service/vue/temp
+    mail: D:/home1/irteam/files_server/service/vue/mail
+    media: D:/home1/irteam/files_server/service/vue/media
+---
+# dev 
+spring:
+  profiles: dev
+  datasource:
+#    url: jdbc:mysql://10.101.97.88:13306/mas2_dev?characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:log4jdbc:mysql://10.101.97.74:13306/vue_test?characterEncoding=UTF-8&serverTimezone=UTC
+    username: admin
+    password: roqkf2xla!@#456
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    hikari:
+      connection-timeout: 5000
+      validation-timeout: 1000
+      maximum-pool-size: 30
+      minimum-idle: 2
+      connection-test-query: SELECT 1
+
+logging:
+  path: /home1/irteam/service/vue-api/logs
+  
+file:
+  path:
+    default: /home1/irteam/files_server/service/vue
+    upload: /home1/irteam/files_server/service/vue/upload
+    company: /home1/irteam/files_server/service/vue/company
+    board: /home1/irteam/files_server/service/vue/board
+    temp: /home1/irteam/files_server/service/vue/temp
+    mail: /home1/irteam/files_server/service/vue/mail
+    media: /home1/irteam/files_server/service/vue/media
+    
+---
+# real
+spring:
+  profiles: real
+  datasource:
+#    url: jdbc:mysql://10.101.97.88:13306/mas2?characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:log4jdbc:mysql://10.101.97.74:13306/vue_test?characterEncoding=UTF-8&serverTimezone=UTC
+    username: admin
+    password: roqkf2xla!@#456
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    hikari:
+      connection-timeout: 5000
+      validation-timeout: 1000
+      maximum-pool-size: 30
+      minimum-idle: 2
+      connection-test-query: SELECT 1
+
+logging:
+  path: /home1/irteam/service/vue-api/logs
+  
+file:
+  path:
+    default: /home1/irteam/files_server/service/vue
+    upload: /home1/irteam/files_server/service/vue/upload
+    company: /home1/irteam/files_server/service/vue/company
+    board: /home1/irteam/files_server/service/vue/board
+    temp: /home1/irteam/files_server/service/vue/temp
+    mail: /home1/irteam/files_server/service/vue/mail
+    media: /home1/irteam/files_server/service/vue/media
